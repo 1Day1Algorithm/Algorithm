@@ -1,61 +1,43 @@
 import java.io.*;
-import java.util.*;
 
 public class Main {
-	static long answer;
 	public static void main(String args[]) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		int T = Integer.parseInt(br.readLine());
 		
+		final int MAX_LEN = 5001;
+		
+		long[][] dp = new long[MAX_LEN][MAX_LEN];
+		
+		dp[1][1] = 1;
+		
+		// r: '(' 괄호의 개수, c: 총 몇 글자인지
+		for(int c=2; c<MAX_LEN; c++) {
+			for(int r=1; r<MAX_LEN; r++) {
+				int leftCnt = r;    // '(' 개수
+				int rightCnt = c-r; // ')' 개수
+				
+				if(leftCnt < rightCnt) continue;
+				else {
+					dp[r][c] = (dp[r-1][c-1]%1000000007 + dp[r][c-1]%1000000007)%1000000007;
+				}
+			}
+		}
+		
 		while(T > 0) {
 			int L = Integer.parseInt(br.readLine());
-			
-			answer = 0;
-			getStringByDFS("", 0, L, 0, 0);
-			bw.write(answer%1000000007+"\n");
+
+			if(L%2 != 0) {
+				bw.write(0 + "\n");
+			} else {
+				bw.write(dp[L/2][L]%1000000007 + "\n");
+			}
 			
 			T -= 1;
 		}
 		
 		bw.flush();
 		bw.close();
-	}
-	public static void getStringByDFS(String str, int cnt, int maxLen, int leftCnt, int rightCnt) {
-		if(leftCnt < rightCnt) return;
-		if(cnt == maxLen) {
-			if(isCorrectStr(str)) {
-				answer += 1;
-			}
-			return;
-		}
-		
-		String newStr = str + "(";
-		getStringByDFS(newStr, cnt+1, maxLen, leftCnt+1, rightCnt);
-		
-		newStr = str + ")";
-		getStringByDFS(newStr, cnt+1, maxLen, leftCnt, rightCnt+1);
-	}
-	public static boolean isCorrectStr(String str) {
-		Stack<Character> stack = new Stack<>();
-		
-		for(int i=0; i<str.length(); i++) {
-			char c = str.charAt(i);
-			
-			if(c == '(') {
-				stack.push('(');
-			} else {
-				if(stack.size() > 0) {
-					stack.pop();
-				} else {
-					return false;
-				}
-			}
-		}
-		
-		if(stack.size() > 0) return false;
-		
-		return true;
-		
 	}
 }
