@@ -1,0 +1,47 @@
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+class Solution {
+      public static int solution(String[][] book_time) {
+        // 시작과 종료 시간 Map
+        Map<String, Integer> timeMap = new HashMap<>();
+
+        // 시작과 종료 시간을 기록
+        for (String[] reservation : book_time) {
+            timeMap.put(reservation[0], timeMap.getOrDefault(reservation[0], 0) + 1);
+            timeMap.put(addTen(reservation[1]), timeMap.getOrDefault(addTen(reservation[1]), 0) - 1);
+        }
+
+        // 시간대별 필요한 객실의 수 
+        int answer = 0;
+        int currentRooms = 0;
+        String[] timeList = timeMap.keySet().toArray(new String[0]); // new String[0] set의 크기맞춰서 배열 자동 조절
+        Arrays.sort(timeList);
+
+        for (String time : timeList) {
+            currentRooms += timeMap.get(time);
+            answer = Math.max(answer, currentRooms);
+        }
+
+        return answer;
+    }
+
+    // 종료 시간 10분 후 부터 들어갈수있음
+    private static String addTen(String time) {
+        String[] parts = time.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+
+        // 종료 시간에서 10분을 더함
+        minutes += 10;
+        if (minutes >= 60) {
+            hours++;
+            minutes -= 60;
+        }
+
+        // 시간과 분을 다시 문자열로 변환
+        String newHours = String.format("%02d", hours);
+        String newMinutes = String.format("%02d", minutes);
+        return newHours + ":" + newMinutes;
+    }
+}
