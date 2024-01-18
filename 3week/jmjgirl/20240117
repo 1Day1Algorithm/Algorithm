@@ -1,0 +1,120 @@
+import java.util.*;
+class Solution {
+    public int solution(int coin, int[] cards) {
+        Queue<Integer> cardsQueue = new LinkedList<Integer>(); // 전체 cards
+        for(int i=cards.length/3; i<cards.length; i++) cardsQueue.add(cards[i]);
+        
+        int answer = 0;
+        int cardSum = cards.length + 1;
+        ArrayList<Integer> myCards = new ArrayList<Integer>();
+        for(int i=0; i<cards.length/3; i++) myCards.add(cards[i]);
+        
+        ArrayList<Integer> pairCards = new ArrayList<Integer>(); // myCards 중 n+1을 만족하는
+        for(int i=0; i<cards.length/3; i++) {
+            for(int j=i+1; j<cards.length/3; j++) {
+                if(cards[i] + cards[j] == cardSum) {
+                    pairCards.add(cards[i]);
+                    pairCards.add(cards[j]);
+                    myCards.remove(Integer.valueOf(cards[i]));
+                    myCards.remove(Integer.valueOf(cards[j]));
+                }
+            }
+        }
+        
+        
+        ArrayList<Integer> remainList = new ArrayList<Integer>(); //임시 보관
+        
+        while(!cardsQueue.isEmpty()) {
+            boolean pass = false;
+            int count = 0;
+            int firstCard = cardsQueue.poll();
+            int secondCard = cardsQueue.poll();
+            
+            for(int i=0; i<myCards.size(); i++) {
+                
+                // firstCard가 만족하면
+                if(coin > 0 && myCards.get(i) + firstCard == cardSum) {
+                    System.out.println("firstCard만");
+                    coin -= 1;
+                    answer++;
+                    count++;
+                    pass = true;
+                } 
+                
+                // secondCard가 만족하면
+                else if(coin > 0 && myCards.get(i) + secondCard == cardSum) {
+                    System.out.println("secondCard만");
+                    coin -= 1;
+                    answer++;
+                    count++;
+                    pass = true;
+                }
+                
+            }
+            
+            if(count == 2) {
+                coin ++;
+                answer --;
+                pairCards.add(secondCard);
+                pairCards.add(cardSum - secondCard);
+                myCards.remove(Integer.valueOf(cardSum - secondCard));
+            }
+            
+            
+            // 둘다 만족하지 않다면 
+            if(!pass) {
+                System.out.println("이건@");
+                if(pairCards.size() >= 2) {
+                    remainList.add(firstCard);
+                    remainList.add(secondCard);
+                    System.out.println("pairCards로");
+                    pairCards.remove(0);
+                    pairCards.remove(0);
+                    answer++;
+                    continue;
+                }
+                
+                 
+                if(coin >= 2) {
+                    remainList.add(firstCard);
+                    remainList.add(secondCard);
+                    if(remainList.size() >= 2) {
+                        int remainFirst = remainList.get(0);
+                        int remainSecond = remainList.get(1);
+                        if(coin >= 2 && remainFirst + remainSecond == cardSum) {
+                            System.out.println("두수만족");
+                            coin -= 2;
+                            answer++;
+                            remainList.remove(0);
+                            remainList.remove(0);
+                            continue;
+                        } 
+                    }
+                }
+                    
+                if(coin > 0 && !remainList.isEmpty()) {
+                    if(remainList.get(0) + firstCard == cardSum) {
+                        System.out.println("firstCard remain");
+                        remainList.remove(0);
+                        remainList.remove(Integer.valueOf(firstCard));
+                        coin--;
+                        answer++;
+                        continue;
+                    } else if(remainList.get(0) + secondCard == cardSum) {
+                        System.out.println("secondCard remain");
+                        remainList.remove(0);
+                        remainList.remove(Integer.valueOf(secondCard));
+                        coin--;
+                        answer++;
+                        continue;
+                    }
+                    break;
+                } else {
+                    System.out.println("실패");
+                    return answer+1;
+                }
+            }     
+        }
+        return answer+1;
+    }
+}
