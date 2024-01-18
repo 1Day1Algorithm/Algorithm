@@ -88,20 +88,21 @@ class Solution {
         }
         
         // 왼쪽만 머지 되어 있을 경우
-        else if(visited[r1][c1] > 0 && visited[r2][c2] == 0) {
+        else if(visited[r1][c1] != 0 && visited[r2][c2] == 0) {
             visited[r2][c2] = visited[r1][c1];
         }
         
         // 오른쪽만 머지 되어 있을 경우
-        else if(visited[r2][c2] > 0 && visited[r1][c1] == 0) {
+        else if(visited[r2][c2] != 0 && visited[r1][c1] == 0) {
             visited[r1][c1] = visited[r2][c2];
         }
 
         // 두쪽다 머지 되어 있을 경우
-        else if(visited[r1][c1] > 0 && visited[r2][c2] > 0) {
+        else if(visited[r1][c1] != 0 && visited[r2][c2] != 0) {
+            int tempVal = visited[r2][c2]; // - 추가
             for(int i=1; i<51; i++) {
                 for(int j=1; j<51; j++) {
-                    if(visited[i][j] == visited[r2][c2]) {
+                    if(visited[i][j] == tempVal) {
                         visited[i][j] = visited[r1][c1];
                     }
                 }
@@ -122,9 +123,15 @@ class Solution {
         int c = Integer.parseInt(commandArr[2]);
         String temp = map[r][c];
         
+        int val = visited[r][c];
+        
+        // 이부분이 문제였다...! 추가해주니까 성공
+        if (val == 0)
+            return;
+        
         for(int i=1; i<=50; i++) {
             for(int j=1; j<=50; j++) {
-                if(visited[i][j] == visited[r][c]) {
+                if(visited[i][j] == val) {
                     if(i==r && j==c) continue;
                     visited[i][j] = 0;
                     map[i][j] = "";
