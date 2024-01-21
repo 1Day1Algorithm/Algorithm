@@ -4,22 +4,6 @@ enum Type{
     NON, COMPLETE, INCOMPLETE, FIRST;
 }
 
-class Node implements Comparable<Node>{
-    int i;
-    int j;
-    int coin;
-    
-    public Node(int i, int j, int coin){
-        this.i=i;
-        this.j=j;
-        this.coin=coin;
-    }
-    
-    public int compareTo(Node n){
-        return this.coin-n.coin;
-    }
-}
-
 class Solution {
     final int MAX = 1000;
     
