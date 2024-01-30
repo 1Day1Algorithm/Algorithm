@@ -1,0 +1,75 @@
+import java.util.*;
+class Solution {
+    List<int[]>[] requests; 
+    int[][] requiredTime; 
+    int k,n;
+    public int solution(int k, int n, int[][] reqs) {
+        
+        this.k =k;
+        this.n = n;
+        requests = new List[k];
+        for(int i =0; i<k; i++){
+            requests[i]= new ArrayList<>();
+        }
+        for(int[] req : reqs){
+            requests[req[2]-1].add(new int[]{req[0], req[1]});
+        }
+        requiredTime = new int[k][n-k +2];
+        
+        for(int i =0; i< k; i++){
+    for(int j = 1; j< n- k +2; j++){
+        requiredTime[i][j] = calculateTime(i,j); // 여기
+    }
+}
+        // 대기시간 최소시간 
+        return calculateTotalMinTime();
+    }
+    private int calculateTotalMinTime(){
+        int remain = n -k;
+        int[] mentorCount = new int[k];
+        Arrays.fill(mentorCount, 1);
+    
+        while(remain-- >0){
+            int maxDiff = 0;
+            int maxIndex =0;
+            
+            for(int i =0; i< k; i++){
+                if(mentorCount[i] == n-k +1){
+                    continue;
+                }
+                  
+            int diff = requiredTime[i][mentorCount[i]] - requiredTime[i][mentorCount[i] + 1];
+            if(maxDiff < diff){
+                maxDiff = diff;
+                maxIndex =i;
+            }
+        }
+    mentorCount[maxIndex]++;
+        }
+    int sum =0;
+    for(int i =0; i< k; i++){
+        sum += requiredTime[i][mentorCount[i]];
+    }
+    
+    return sum;
+    }
+    private int calculateTime(int k, int cnt){
+        int result =0;
+      // 상담원 종료시간 관리용
+        PriorityQueue<Integer> queue = new PriorityQueue<>();
+        for(int i =0; i< cnt; i++){
+            queue.add(0);
+        }
+        for(int[] request : requests[k]){
+            Integer cur = queue.poll();
+            
+            if(cur <= request[0]){
+                queue.add(request[0] + request[1]);
+            }else {
+                result += cur - request[0];
+                queue.add(cur + request[1]);
+            }
+        }
+        return result;
+    }
+}
