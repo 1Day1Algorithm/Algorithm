@@ -1,0 +1,73 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+
+    private boolean[] used;  // 카드 사용 여부를 저장하는 배열
+    private int coin;        
+    private boolean canContinue = true;  
+
+    
+    public int solution(int coin, int[] cards) {
+        List<Integer> selectedCards = new ArrayList<>(); 
+        used = new boolean[cards.length];  
+        this.coin = coin; 
+
+        
+        for (int i = 0; i < cards.length / 3; i++) {
+            selectedCards.add(cards[i]);
+        }
+
+        int round = 1;  
+
+      
+        for (int i = cards.length / 3; i < cards.length; i += 2) {
+            selectedCards.add(cards[i]);
+            selectedCards.add(cards[i + 1]);
+            checkCombination(selectedCards, cards.length + 1, cards);
+
+            
+            if (this.coin < 0 || !canContinue) {
+                return round;
+            }
+
+            round++;  
+        }
+
+        return round;  
+    }
+
+    
+    private void checkCombination(List<Integer> selectedCards, int targetSum, int[] cards) {
+       
+        for (int i = 0; i < cards.length / 3; i++) {
+            for (int j = i + 1; j < cards.length / 3; j++) {
+                if (selectedCards.get(i) + selectedCards.get(j) == targetSum && !used[i] && !used[j]) {
+                    used[i] = true;
+                    used[j] = true;
+                    return; 
+                }
+            }
+        }
+
+       
+        for (int i = 0; i < selectedCards.size() - 1; i++) {
+            for (int j = i + 1; j < selectedCards.size(); j++) {
+                if (selectedCards.get(i) + selectedCards.get(j) == targetSum && !used[i] && !used[j]) {
+                    used[i] = true;
+                    used[j] = true;
+                   
+                    if (i >= cards.length / 3) {
+                        coin--;
+                    }
+                    if (j >= cards.length / 3) {
+                        coin--;
+                    }
+                    return;  
+                }
+            }
+        }
+
+        canContinue = false;  
+    }
+}
