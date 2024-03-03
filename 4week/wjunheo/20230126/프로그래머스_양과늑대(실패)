@@ -1,0 +1,55 @@
+class Solution {
+    // 양과 늑대저장 배열
+    int[] gInfo;
+    // 트리의 간선 정보 저장 배열
+    int[][] gEdges;
+    
+    int maxSheep = 0;
+
+    
+    public int solution(int[] info, int[][] edges) {
+        //같은 주소쓰게 저장
+        gInfo = info;
+        
+        gEdges = edges;
+
+        // 초기에 모든 노드를 방문x 표시하는 배열
+        boolean[] inVisited = new boolean[info.length];
+        // DFS(Depth-First Search) 수행
+        dfs(0, inVisited, 0, 0);
+
+      
+        return maxSheep;
+    }
+
+    // DFS 메서드
+    public void dfs(int idx, boolean[] visited, int sheepCnt, int wolfCnt) {
+        // 현재 노드를 방문했다고 표시
+        visited[idx] = true;
+
+        // 현재 노드의 양 또는 늑대 수 업데이트
+        if (gInfo[idx] == 0) {
+            sheepCnt++;
+
+            // 최대 양 수 업데이트
+            if (sheepCnt > maxSheep) {
+                maxSheep = sheepCnt;
+            }
+        } else {
+            wolfCnt++;
+        }
+
+        // 양의 수가 늑대의 수보다 많을 경우에만 DFS 수행
+        if (sheepCnt > wolfCnt) {
+            // 트리의 간선을 확인하면서 방문하지 않은 노드에 대해 DFS재귀 호출
+            for (int[] edge : gEdges) {
+                if (visited[edge[0]] && !visited[edge[1]]) {
+                    dfs(edge[1], visited, sheepCnt, wolfCnt);
+                }
+            }
+        }
+
+        // DFS에서 되돌아올 때 방문 여부 초기화  
+        visited[idx] = false; //현재 노드를 방문한 후에 해당 노드를 다시 방문할 수 있도록  
+    }
+}
