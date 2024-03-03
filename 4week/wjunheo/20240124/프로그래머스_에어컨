@@ -1,0 +1,65 @@
+import java.util.Arrays;
+
+class Solution {
+    public int solution(int temperature, int t1, int t2, int a, int b, int[] onboard) {
+        int answer = Integer.MAX_VALUE;
+
+        int length = onboard.length; 
+
+        // 온도 범위를 -10~40 에서 0~50로 변경
+        temperature += 10;
+        t1 += 10;
+        t2 += 10;
+
+      // dp[a][b] = a분에 실내 온도 b도일 때의 소비 전력 최소값
+        int[][] dp = new int[length][51];
+
+        // dp 배열초기화 Integer.MAX_VALUE로 채우고 초기 온도를 0으로 설정
+        for (int i = 0; i < length; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+          dp[0][temperature] = 0; //처음에 아무동작없는상태니까 소비전력 0
+
+        // DP
+        for (int i = 0; i < length - 1; i++) {
+            for (int j = 0; j < 51; j++) {
+                // 승객이 탑승 희망 온도가 t1과 t2 범위 밖이면 
+              if (onboard[i] == 1 && (j < t1 || j > t2)){
+                continue;
+              }
+                // 희망 온도 == 실내 온도 (실내 온도 유지, 전력 b)
+                if (dp[i][j] != Integer.MAX_VALUE){
+                    dp[i + 1][j] = Math.min(dp[i + 1][j], dp[i][j] + b);
+                }
+                // 희망 온도 < 실내 온도 (실내 온도 1 하강함, 전력 a)
+                  if (j > 0 && dp[i][j] != Integer.MAX_VALUE){
+                    dp[i + 1][j - 1] = Math.min(dp[i + 1][j - 1], dp[i][j] + a);
+                  }
+                // 희망 온도 > 실내 온도 (실내 온도 1 상승함, 전력 a)
+                    if (j < 50 && dp[i][j] != Integer.MAX_VALUE){
+                    dp[i + 1][j + 1] = Math.min(dp[i + 1][j + 1], dp[i][j] + a);
+                    }
+                // off (실내 온도 유지, 전력 X)
+                if (temperature == j) {
+                    dp[i + 1][j] = Math.min(dp[i + 1][j], dp[i][j]);
+                } else if (j > 0 && temperature < j) {
+                    dp[i + 1][j - 1] = Math.min(dp[i + 1][j - 1], dp[i][j]);
+                } else if (j < 50 && temperature > j) {
+                    dp[i + 1][j + 1] = Math.min(dp[i + 1][j + 1], dp[i][j]);
+                }
+            }
+        }
+
+        
+        for (int i = 0; i < 51; i++) {
+            // 승객이 탑승 중이고 희망 온도가 t1과 t2 범위 밖이면 
+          if (onboard[length - 1] == 1 && (i < t1 || i > t2)){
+            continue;
+          }
+            answer = Math.min(answer, dp[length - 1][i]);
+                                                              
+        }
+
+        return answer;
+    }
+}
